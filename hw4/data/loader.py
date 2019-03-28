@@ -13,7 +13,7 @@ import torchvision
 from torch.utils import data
 from scipy.misc import imsave
 from torch.utils import data
-import random 
+import random
 from torch.autograd import Variable
 
 pascal_labels = np.asarray([[0,0,0], [128,0,0], [0,128,0], [128,128,0], [0,0,128], [128,0,128],

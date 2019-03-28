@@ -7,7 +7,7 @@ from torch.utils import data
 from nets.zoomout import Zoomout
 from data.loader import PascalVOC
 from utils import *
-impor gc
+import gc
 
 def extract_samples(zoomout, dataset):
     """
@@ -20,7 +20,8 @@ def extract_samples(zoomout, dataset):
 
     for image_idx in range(len(dataset)):
         images, labels = dataset[image_idx]
-        raise NotImplementedError
+        with torch.no_grad():
+            zoom_feats = zoomout(images.cpu().float().unsqueeze(0))
 
     return features, features_labels
 
