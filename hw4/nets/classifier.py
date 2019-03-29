@@ -26,9 +26,9 @@ class FCClassifier(nn.Module):
         """
         TODO: Implement a fully connected classifier.
         """
-        self.layer0 = nn.Linear(1472, 100)
+        self.layer0 = nn.Linear(1472 * 1, 100)
         self.relu = nn.ReLU()
-        self.layer1 = nn.Linear(100, 1)
+        self.layer1 = nn.Linear(100, 21)
         # You will need to compute these and store as *.npy files
         self.mean = torch.Tensor(np.load("../features/mean.npy"))
         self.std = torch.Tensor(np.load("../features/std.npy"))
