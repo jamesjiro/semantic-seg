@@ -37,11 +37,11 @@ class Zoomout(nn.Module):
         TODO: load the correct layers to extract zoomout features.
         Hint: use F.upsample_bilinear and then torch.cat.
         """
-        out0 = F.upsample_bilinear(out0, [112,112])
-        out1 = F.upsample_bilinear(out1, [112,112])
-        out2 = F.upsample_bilinear(out2, [112,112])
-        out3 = F.upsample_bilinear(out3, [112,112])
-        out4 = F.upsample_bilinear(out4, [112,112])
+        out0 = F.upsample_bilinear(out0, [224,224])
+        out1 = F.upsample_bilinear(out1, [224,224])
+        out2 = F.upsample_bilinear(out2, [224,224])
+        out3 = F.upsample_bilinear(out3, [224,224])
+        out4 = F.upsample_bilinear(out4, [224,224])
         desc = torch.cat([out0, out1, out2, out3, out4], 1)
 
         return desc

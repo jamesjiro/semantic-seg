@@ -28,20 +28,41 @@ def train(dataset, model, optimizer, epoch):
         Output: label.
     """
 
-    batch_size = # Can be fairly large
+    batch_size = 4# Can be fairly large
 
     data_x, data_y = dataset
 
-    model.train()
+    data_x = torch.from_numpy(data_x)
+    data_y = torch.from_numpy(data_y)
 
-    raise NotImplementedError
+    trainset = data.TensorDataset(data_x, data_y)
+    trainloader = data.DataLoader(trainset, batch_size=batch_size, shuffle=True,
+                                  num_workers=2)
+
+    model.train()
 
     """
     Put train loop here.
     """
+    for i, data in enumerate(trainloader, 0):
+        inputs, labels = data
+
+        optimizer.zero_grad()
+
+        outputs = net(inputs)
+        loss = cross_entropy1d(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+        if i % 2000 == 1999:
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 2000))
+            running_loss = 0.0
+
+    print('Finished Training')
 
     torch.save(model, your_path + "/models/fc_cls.pkl")
-
 
 
 def main():
@@ -53,7 +74,7 @@ def main():
     dataset_x = np.load("./features/feats_x.npy")
     dataset_y = np.load("./features/feats_y.npy")
 
-    num_epochs = # your choice, try > 10
+    num_epochs = 20# your choice, try > 10
 
     for epoch in range(num_epochs):
         train([dataset_x, dataset_y], classifier, optimizer, epoch)

@@ -11,7 +11,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 import torchvision.models as models
-from zoomout import *
+from nets.zoomout import *
 import numpy as np
 from torchvision import transforms
 
@@ -26,22 +26,19 @@ class FCClassifier(nn.Module):
         """
         TODO: Implement a fully connected classifier.
         """
-        self.layer0 = nn.Linear(112 * 112 * 21, 112 * 112 * 21)
+        self.layer0 = nn.Linear(1472, 100)
         self.relu = nn.ReLU()
-        self.layer1 = nn.Linear(112 * 112 * 21, 112 * 112 * 21)
-        self.layer0 = nn.Linear(10, 10)
-        self.relu = nn.ReLU()
-        self.layer1 = nn.Linear(10, 10)
+        self.layer1 = nn.Linear(100, 1)
         # You will need to compute these and store as *.npy files
-        self.mean = torch.Tensor(np.load("./features/mean.npy"))
-        self.std = torch.Tensor(np.load("./features/std.npy"))
+        self.mean = torch.Tensor(np.load("../features/mean.npy"))
+        self.std = torch.Tensor(np.load("../features/std.npy"))
 
     def forward(self, x):
         # normalization
         x = (x - self.mean)/self.std
         x = self.layer0(x)
         x = self.relu(x)
-        x = self.layer2(x)
+        x = self.layer1(x)
         return F.log_softmax(x)
 
 
