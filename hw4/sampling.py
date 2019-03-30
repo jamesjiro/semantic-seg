@@ -33,7 +33,7 @@ def extract_samples(zoomout, dataset):
                     sample_idcs = np.random.randint(0, n_idcs - 1, n_samples)
                     for idx in sample_idcs:
                         feat = zoom_feats[0, :, idcs[idx][0], idcs[idx][1]]
-                        features.append(feat.numpy().tolist())
+                        features.append(feat.tolist())
                         features_labels.append(label)
 
     features = np.asarray(features)
@@ -52,8 +52,12 @@ def main():
 
     np.save("./features/feats_x.npy", features)
     np.save("./features/feats_y.npy", labels)
-    np.save(".features/mean.npy", np.mean(features, axis=0))
-    np.save(".features/std.npy", np.std(features, axis=0))
+    dataset_x = np.load("./features/feats_x.npy")
+    features = torch.from_numpy(dataset_x)
+    mean = features.mean(dim=0)
+    std = features.std(dim=0)
+    np.save("./features/mean.npy", mean.numpy())
+    np.save("./features/std.npy", std.numpy())
 
 
 if __name__ == '__main__':
