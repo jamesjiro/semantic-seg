@@ -30,11 +30,12 @@ class FCClassifier(nn.Module):
         self.relu = nn.ReLU()
         self.layer1 = nn.Linear(100, 21)
         # You will need to compute these and store as *.npy files
-        self.mean = torch.Tensor(np.load("../features/mean.npy"))
-        self.std = torch.Tensor(np.load("../features/std.npy"))
+        self.mean = torch.Tensor(np.load("./features/mean.npy"))
+        self.std = torch.Tensor(np.load("./features/std.npy"))
 
     def forward(self, x):
         # normalization
+        x = x.type(torch.FloatTensor)
         x = (x - self.mean)/self.std
         x = self.layer0(x)
         x = self.relu(x)

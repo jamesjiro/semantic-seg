@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
 from torch.autograd import Variable
-from torch.utils import data
+from torch.utils.data import TensorDataset, DataLoader
 import torchvision.transforms as transforms
 
 from losses.loss import *
@@ -28,28 +28,29 @@ def train(dataset, model, optimizer, epoch):
         Output: label.
     """
 
-    batch_size = 4# Can be fairly large
+    batch_size = 64# Can be fairly large
 
     data_x, data_y = dataset
 
     data_x = torch.from_numpy(data_x)
     data_y = torch.from_numpy(data_y)
 
-    trainset = data.TensorDataset(data_x, data_y)
-    trainloader = data.DataLoader(trainset, batch_size=batch_size, shuffle=True,
-                                  num_workers=2)
+    trainset = TensorDataset(data_x, data_y)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True,
+                             num_workers=2)
 
     model.train()
 
     """
     Put train loop here.
     """
+    running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
 
         optimizer.zero_grad()
 
-        outputs = net(inputs)
+        outputs = model(inputs)
         loss = cross_entropy1d(outputs, labels)
         loss.backward()
         optimizer.step()
@@ -62,7 +63,7 @@ def train(dataset, model, optimizer, epoch):
 
     print('Finished Training')
 
-    torch.save(model, your_path + "/models/fc_cls.pkl")
+    torch.save(model, "./models/fc_cls.pkl")
 
 
 def main():
