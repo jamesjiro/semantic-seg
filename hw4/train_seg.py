@@ -32,12 +32,19 @@ def train(args, zoomout, model, train_loader, optimizer, epoch):
         """
         TODO: Implement training loop.
         """
+        inputs = zoomout(images.cpu().float().unsqueeze(0))
 
-        raise NotImplementedError
+        optimizer.zero_grad()
+
+        predicts = model(inputs)
+        loss = cross_entropy2d(predicts, labels)
+        loss.backward()
+        optimizer.step()
 
         if batch_idx % 20 == 0:
             count = count + 1
-            print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
+            print("Epoch [%d/%d]" % (epoch+1, args.n_epoch))
+            #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
 
         if batch_idx % 20 == 0:
             """
@@ -57,7 +64,7 @@ def train(args, zoomout, model, train_loader, optimizer, epoch):
             visualize("./lbls/gt_" + str(count) + "_" + str(epoch) + ".png", gt)
 
     # Make sure to save your model periodically
-    torch.save(model, your_path + "/full_model.pkl")
+    torch.save(model, "./models/full_model.pkl")
 
 def val(args, zoomout, model, val_loader):
     # modified from https://github.com/wkentaro/pytorch-fcn/blob/master/examples/voc/evaluate.py
@@ -105,14 +112,14 @@ def main():
     for param in zoomout.parameters():
         param.requires_grad = False
 
-    fc_classifier = torch.load(fc_model_path)
+    fc_classifier = torch.load("./models/fc_cls.pkl")
     classifier = DenseClassifier(fc_model=fc_classifier).float()
 
     """
        TODO: Pick an optimizer.
        Reasonable optimizer: Adam with learning rate 1e-4.  Start in range [1e-3, 1e-4].
     """
-    optimizer = # pick an optimizer
+    optimizer = optim.Adam(classifier.parameters(), args.l_rate)
 
     dataset_train = PascalVOC(split = 'train')
     dataset_val = PascalVOC(split = 'val')

@@ -27,6 +27,10 @@ class Zoomout(nn.Module):
         self.layer3 = nn.Sequential(*self.feature_list[10:15])
         self.layer4 = nn.Sequential(*self.feature_list[15:20])
     def forward(self, x):
+        if len(x.shape) > 4:
+            x = x[0]
+        print("x input to zoomout", x.shape)
+        print("length of input", len(x.shape))
         out0 = self.layer0(x)
         out1 = self.layer1(out0)
         out2 = self.layer2(out1)

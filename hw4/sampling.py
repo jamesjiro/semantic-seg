@@ -23,6 +23,7 @@ def extract_samples(zoomout, dataset):
     for image_idx in range(len(dataset)):
         print("...Processing image %d / %d" % (image_idx, len(dataset)), end='\r')
         images, labels = dataset[image_idx]
+        print("images size in extract samples", images.shape)
         with torch.no_grad():
             zoom_feats = zoomout(images.cpu().float().unsqueeze(0))
             for label in range(21):

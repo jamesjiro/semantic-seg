@@ -36,7 +36,10 @@ class FCClassifier(nn.Module):
     def forward(self, x):
         # normalization
         x = x.type(torch.FloatTensor)
-        x = (x - self.mean)/self.std
+        """
+        TODO: Fix standardization
+        """
+        #x = (x - self.mean)/self.std
         x = self.layer0(x)
         x = self.relu(x)
         x = self.layer1(x)
@@ -58,11 +61,11 @@ class DenseClassifier(nn.Module):
 
         # First linear fully connected layer
         fc0 = next(fcc_modules).state_dict()
-        self.fc0_in = fc["weight"].size(1)
-        self.fc0_out = fc["weight"].size(0)
-        conv0 = nn.Conv2d(fc0_out, fc0_in, 1, 1)
-        conv0.load_state_dict({"weight":fc["weight"].view(self.fc0_out, self.fc0_in, 1, 1),
-                               "bias":fc["bias"]})
+        self.fc0_in = fc0["weight"].size(1)
+        self.fc0_out = fc0["weight"].size(0)
+        conv0 = nn.Conv2d(self.fc0_in, self.fc0_out, 1, 1)
+        conv0.load_state_dict({"weight":fc0["weight"].view(self.fc0_out, self.fc0_in, 1, 1),
+                               "bias":fc0["bias"]})
         self.conv0 = conv0
 
         # Activation layer
@@ -70,26 +73,26 @@ class DenseClassifier(nn.Module):
 
         # Second linear fully connected layer
         fc1 = next(fcc_modules).state_dict()
-        self.fc1_in = fc["weight"].size(1)
-        self.fc1_out = fc["weight"].size(0)
-        conv1 = nn.Conv2d(fc0_out, fc0_in, 1, 1)
-        conv1.load_state_dict({"weight":fc["weight"].view(self.fc1_out, self.fc1_in, 1, 1),
-                               "bias":fc["bias"]})
+        self.fc1_in = fc1["weight"].size(1)
+        self.fc1_out = fc1["weight"].size(0)
+        conv1 = nn.Conv2d(self.fc1_in, self.fc1_out, 1, 1)
+        conv1.load_state_dict({"weight":fc1["weight"].view(self.fc1_out, self.fc1_in, 1, 1),
+                               "bias":fc1["bias"]})
         self.conv1 = conv1
 
-        self.mean = torch.Tensor(np.load("./features/mean.npy"))
-        self.std = torch.Tensor(np.load("./features/std.npy"))
+        self.mean = np.load("./features/mean.npy")
+        self.std = np.load("./features/std.npy")
 
         # You'll need to add these trailing dimensions so that it broadcasts correctly.
-        self.mean = torch.Tensor(np.expand_dims(np.expand_dims(mean, -1), -1))
-        self.std = torch.Tensor(np.expand_dims(np.expand_dims(std, -1), -1))
+        self.mean = torch.Tensor(np.expand_dims(np.expand_dims(self.mean, -1), -1))
+        self.std = torch.Tensor(np.expand_dims(np.expand_dims(self.std, -1), -1))
 
     def forward(self, x):
         """
         Make sure to upsample back to 224x224 --take a look at F.upsample_bilinear
         """
-        x = F.upsample_bilinear(x, [224, 224])
-        x = x.view(self.fc1_out, self.fc1_in, 1, 1)
+        #x = F.upsample_bilinear(x, [224, 224])
+        #x = x.view(self.fc0_out, self.fc0_in, 224, 224)
 
         # normalization
         x = (x - self.mean)/self.std
